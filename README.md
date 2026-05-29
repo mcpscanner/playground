@@ -24,26 +24,26 @@ A `GET` to any path returns a small JSON description.
 
 ## Try it
 
-Point the scanner at the live target (API on `api.mcpscanner.dev`):
+**In the browser:** paste a playground URL into the scanner at
+[mcpscanner.dev](https://mcpscanner.dev) — e.g. `https://playground.mcpscanner.dev/error`.
+
+**From your terminal:** use the open-source [CLI](https://github.com/mcpscanner/cli),
+which scans the target directly:
 
 ```bash
 # Vulnerable — expect Grade F
-curl -X POST https://api.mcpscanner.dev/api/scan \
-  -H "Content-Type: application/json" \
-  -d '{"server_url": "https://playground.mcpscanner.dev/error"}'
+mcpscanner scan https://playground.mcpscanner.dev/error
 
 # Hardened — expect Grade A (anonymous = locked down)
-curl -X POST https://api.mcpscanner.dev/api/scan \
-  -H "Content-Type: application/json" \
-  -d '{"server_url": "https://playground.mcpscanner.dev/success"}'
+mcpscanner scan https://playground.mcpscanner.dev/success
 
 # Randomised — expect A or D–F, re-rolls ~every 30s
-curl -X POST https://api.mcpscanner.dev/api/scan \
-  -H "Content-Type: application/json" \
-  -d '{"server_url": "https://playground.mcpscanner.dev/random"}'
+mcpscanner scan https://playground.mcpscanner.dev/random
 ```
 
-Or just paste the URL into [mcpscanner.dev](https://mcpscanner.dev).
+> The hosted API (`api.mcpscanner.dev`) is human-gated (Cloudflare Turnstile) and
+> serves the website's scanner UI — it isn't a public curl endpoint. For scripting
+> and CI, use the CLI above; it talks to targets directly, no API needed.
 
 ### Talking to it directly
 
