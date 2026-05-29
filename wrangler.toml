@@ -2,7 +2,6 @@ name = "mcpscanner-playground"
 main = "src/index.ts"
 compatibility_date = "2025-01-09"
 
-# Custom domain route — enable once mcpscanner.dev is on Cloudflare:
-# [[routes]]
-# pattern = "playground.mcpscanner.dev"
-# custom_domain = true
+[[routes]]
+pattern = "playground.mcpscanner.dev"
+custom_domain = true
