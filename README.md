@@ -2,8 +2,11 @@
 
 A public, **intentionally-vulnerable** demo MCP server for testing [MCP Scanner](https://mcpscanner.dev).
 
-It's a single Cloudflare Worker that exposes two MCP "personas" so you can see the
-scanner produce both a failing and a clean report against a live, public target.
+It's a single Cloudflare Worker that exposes three MCP "personas" so you can see the
+scanner produce a failing, a clean, and a varying report against a live, public target.
+
+It's **public on purpose** — point any MCP scanner (this one, your own, or the
+[open-source CLI](https://github.com/mcpscanner/cli)) at it.
 
 > ⚠️ **Nothing here is real.** No filesystem, shell, database or network is ever
 > touched. The server returns *canned fake* "sensitive" strings purely so a scanner
@@ -15,23 +18,29 @@ scanner produce both a failing and a clean report against a live, public target.
 |----------|-----------|----------------------|
 | `POST /error` | Deliberately insecure MCP server. No auth, CORS misconfigured, exposes risky tools (`read_file`, `run_command`, `query_database`, `fetch_url`, …) and "confirms" injection payloads. | **Grade F** — varies each scan (random tool set + CORS mode) |
 | `POST /success` | Hardened MCP server. Requires a strong bearer token; returns benign "hello world" output to authenticated calls and strict CORS. | **Grade A** when scanned anonymously (correctly locked down) |
+| `POST /random` | Randomised profile, seeded per client IP + 30s window so a single scan stays self-consistent but re-rolls roughly every 30 seconds. | **A ↔ D–F** — flips between a secure and an insecure server |
 
 A `GET` to any path returns a small JSON description.
 
 ## Try it
 
-Point the scanner at the live target:
+Point the scanner at the live target (API on `api.mcpscanner.dev`):
 
 ```bash
 # Vulnerable — expect Grade F
-curl -X POST https://mcpscanner.dev/api/scan \
+curl -X POST https://api.mcpscanner.dev/api/scan \
   -H "Content-Type: application/json" \
   -d '{"server_url": "https://playground.mcpscanner.dev/error"}'
 
 # Hardened — expect Grade A (anonymous = locked down)
-curl -X POST https://mcpscanner.dev/api/scan \
+curl -X POST https://api.mcpscanner.dev/api/scan \
   -H "Content-Type: application/json" \
   -d '{"server_url": "https://playground.mcpscanner.dev/success"}'
+
+# Randomised — expect A or D–F, re-rolls ~every 30s
+curl -X POST https://api.mcpscanner.dev/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{"server_url": "https://playground.mcpscanner.dev/random"}'
 ```
 
 Or just paste the URL into [mcpscanner.dev](https://mcpscanner.dev).
